@@ -1,0 +1,169 @@
+# Accountant Role for University Management System
+# File paths
+with open ('Acc.txt', 'a') as file:
+
+    FEES_FILE = "tuition_fees.txt"
+    RECEIPTS_FILE = "fee_receipts.txt"
+
+
+def read_file(file_path):
+    """
+    Reads the content of a file and returns it as a list of lines.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            return file.readlines()
+    except FileNotFoundError:
+        print(f"Error: {file_path} not found.")
+        return []
+    except IOError as e:
+        print(f"Error reading {file_path}: {e}")
+        return []
+
+def write_file(file_path, data):
+    """
+    Writes data to a file.
+    """
+    try:
+        with open(file_path, 'w') as file:
+            file.writelines(data)
+    except IOError as e:
+        print(f"Error writing to {file_path}: {e}")
+
+# Example usage:
+fees_data = read_file(FEES_FILE)
+if fees_data:
+    print("Tuition fees data:", fees_data)
+
+# Writing sample data to receipts file
+write_file(RECEIPTS_FILE, ["Sample receipt data\n"])
+def initialize_files():
+    try:
+
+
+        open(FEES_FILE, "a").close()
+        open(RECEIPTS_FILE, "a").close()
+        print("Files initialized successfully.")
+    except Exception as e:
+        print(f"Error initializing files: {e}")
+
+
+def record_tuition_fee(student_id, amount_paid):
+    try:
+        with open(FEES_FILE, "a") as file:
+            file.write(f"{student_id},{amount_paid}\n")
+        print(f"Recorded payment of {amount_paid} for student ID {student_id}.")
+    except Exception as e:
+         print(f"Error recording tuition fee: {e}")
+
+
+def view_outstanding_fees():
+    try:
+        fees = {}
+        with open(FEES_FILE, "r") as file:
+            for line in file:
+                student_id, amount_paid = line.strip().split(",")
+                amount_paid = float(amount_paid)
+                fees[student_id] = fees.get(student_id, 0) + amount_paid
+
+                print("Outstanding Fees:")
+            for student_id, total_paid in fees.items():
+                print(f"Student ID: {student_id} | Total Paid: {total_paid}")
+    except FileNotFoundError:
+        print("No fee records found.")
+    except Exception as e:
+        print(f"Error viewing outstanding fees: {e}")
+
+
+def update_payment_record(student_id, new_amount):
+    try:
+        updated = False
+        lines = []
+        with open(FEES_FILE, "r") as file:
+            for line in file:
+                sid, amount_paid = line.strip().split(",")
+            if sid == student_id:
+                lines.append(f"{sid},{new_amount}\n")
+                updated = True
+            else:
+                 lines.append(line)
+
+            if updated:
+                with open(FEES_FILE, "w") as file:
+                    file.writelines(lines)
+                    print(f"Payment record updated for student ID {student_id}.")
+            else:
+                 print(f"No record found for student ID {student_id}.")
+    except FileNotFoundError:
+        print("Fee file not found.")
+    except Exception as e:
+        print(f"Error updating payment record: {e}")
+
+
+def issue_fee_receipt(student_id, amount_paid):
+    try:
+        with open(RECEIPTS_FILE, "a") as file:
+            file.write(f"Receipt - Student ID: {student_id}, Amount Paid: {amount_paid}\n")
+            print(f"Receipt issued for student ID {student_id}.")
+    except Exception as e:
+        print(f"Error issuing fee receipt: {e}")
+
+# Function to view financial summary
+def view_financial_summary():
+    try:
+        total_collected = 0.0
+        student_count = 0
+
+        with open(FEES_FILE, "r") as file:
+            for line in file:
+                amount_paid = line.strip().split(",")
+
+                total_collected += float(amount_paid)
+                student_count += 1
+
+            print(f"Total Fees Collected: {total_collected}")
+            print(f"Number of Payment Records: {student_count}")
+    except FileNotFoundError:
+        print("No financial records available.")
+    except Exception as e:
+        print(f"Error viewing financial summary: {e}")
+
+# Main menu for Accountant role
+def accountant_menu():
+    initialize_files()
+while True:
+    print("\n--- Accountant Menu ---")
+    print("1. Record Tuition Fees")
+    print("2. View Outstanding Fees")
+    print("3. Update Payment Records")
+    print("4. Issue Fee Receipts")
+    print("5. View Financial Summary")
+    print("6. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        student_id = input("Enter Student ID: ")
+        amount_paid = input("Enter Amount Paid: ")
+        record_tuition_fee(student_id, amount_paid)
+    elif choice == "2":
+        view_outstanding_fees()
+    elif choice == "3":
+        student_id = input("Enter Student ID: ")
+        new_amount = input("Enter New Amount Paid: ")
+        update_payment_record(student_id, new_amount)
+    elif choice == "4":
+        student_id = input("Enter Student ID: ")
+        amount_paid = input("Enter Amount Paid: ")
+        issue_fee_receipt(student_id, amount_paid)
+    elif choice == "5":
+        view_financial_summary()
+    elif choice == "6":
+        print("Exiting Accountant Menu.")
+        break
+    else:
+        print("Invalid choice. Please try again.")
+
+
+if _name_ == "_main_":
+    accountant_menu()
